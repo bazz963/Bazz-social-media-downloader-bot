@@ -3,28 +3,25 @@ const axios = require('axios');
 const fs = require('fs');
 
 // ================= CONFIGURATION =================
-const BOT_TOKEN = 'YOUR_TELEGRAM_BOT_TOKEN_HERE';
-const ADMIN_ID = 7667145353; // Replace with your numeric Telegram User ID
+const BOT_TOKEN = 'YOUR_TELEGRAM_BOT_TOKEN_HERE'; // MUST BE YOUR REAL BOT TOKEN
+const ADMIN_ID = 7667145353; // Your numeric Telegram User ID
 
 // REQUIRED CHANNELS & GROUPS (Bot MUST be Admin in both!)
-const REQUIRED_CHANNEL = '@bazzstore963'; // e.g., '@BazzUpdates'
-const REQUIRED_GROUP = '@bazzxmadybug';     // e.g., '@BazzChat'
+const REQUIRED_CHANNEL = '@bazzstore963'; 
+const REQUIRED_GROUP = '@bazzxmadybug';     
 
-// Links for the Join Buttons (use https://t.me/yourusername or invite links)
 const CHANNEL_LINK = 'https://t.me/bazzstore963';
 const GROUP_LINK = 'https://t.me/bazzxmadybug';
 
 const START_PHOTO_URL = 'https://images.unsplash.com/photo-1611162617474-5b21e879e113?auto=format&fit=crop&w=800&q=80';
 const USERS_FILE = './users.json';
 
-// Social Media & Music API endpoints
 const SOCIAL_DOWNLOADER_API = 'https://api.example.com/download?url=';
 const MUSIC_SEARCH_API = 'https://api.example.com/music?q=';
 // =================================================
 
 const bot = new Telegraf(BOT_TOKEN);
 
-// User Tracking Persistence
 let users = new Set();
 
 if (fs.existsSync(USERS_FILE)) {
@@ -37,35 +34,34 @@ if (fs.existsSync(USERS_FILE)) {
 }
 
 function saveUsers() {
-  fs.writeFileSync(USERS_FILE, JSON.stringify([...users], null, 2));
+  try {
+    fs.writeFileSync(USERS_FILE, JSON.stringify([...users], null, 2));
+  } catch (err) {
+    console.error('Error saving users:', err);
+  }
 }
 
 function isAdmin(ctx) {
   return ctx.from && ctx.from.id === ADMIN_ID;
 }
 
-// Helper: Check if user is a member of a channel/group
 async function checkMembership(ctx, targetChat) {
   try {
     const member = await ctx.telegram.getChatMember(targetChat, ctx.from.id);
     return ['creator', 'administrator', 'member'].includes(member.status);
   } catch (err) {
     console.error(`Error checking membership for ${targetChat}:`, err.message);
-    // If bot isn't admin or channel username is invalid, default to true to prevent blocking users
     return true; 
   }
 }
 
-// Middleware: Verify Force Join Status before allowing any action
 async function verifyForceJoin(ctx) {
   if (ctx.from && ctx.from.id) {
-    // Track user
     if (!users.has(ctx.from.id)) {
       users.add(ctx.from.id);
       saveUsers();
     }
 
-    // Skip force join check for Admin
     if (isAdmin(ctx)) return true;
 
     const isChannelMember = await checkMembership(ctx, REQUIRED_CHANNEL);
@@ -98,7 +94,6 @@ To access the downloader features, please join our official Channel and Group be
   return true;
 }
 
-// Handle Verify Button Click
 bot.action('verify_join', async (ctx) => {
   const passed = await verifyForceJoin(ctx);
   if (passed) {
@@ -108,9 +103,6 @@ bot.action('verify_join', async (ctx) => {
   }
 });
 
-// ================= COMMAND HANDLERS =================
-
-// /start Command
 bot.start(async (ctx) => {
   const allowed = await verifyForceJoin(ctx);
   if (!allowed) return;
@@ -142,7 +134,6 @@ bot.start(async (ctx) => {
   }
 });
 
-// /music Command
 bot.command('music', async (ctx) => {
   const allowed = await verifyForceJoin(ctx);
   if (!allowed) return;
@@ -175,7 +166,6 @@ bot.command('music', async (ctx) => {
   }
 });
 
-// Admin Command: /listusers
 bot.command('listusers', async (ctx) => {
   if (!isAdmin(ctx)) {
     return ctx.reply('⛔ Unauthorized access.');
@@ -193,7 +183,6 @@ bot.command('listusers', async (ctx) => {
   await ctx.reply(text, { parse_mode: 'HTML' });
 });
 
-// Admin Command: /broadcast <message>
 bot.command('broadcast', async (ctx) => {
   if (!isAdmin(ctx)) {
     return ctx.reply('⛔ Unauthorized access.');
@@ -222,7 +211,6 @@ bot.command('broadcast', async (ctx) => {
   await ctx.reply(`✅ <b>Broadcast Completed!</b>\n\n• Successful: ${successCount}\n• Failed/Blocked: ${failCount}`, { parse_mode: 'HTML' });
 });
 
-// Link Handler: Auto-detect social media URLs
 bot.on('text', async (ctx) => {
   const text = ctx.message.text;
 
@@ -253,11 +241,12 @@ bot.on('text', async (ctx) => {
   }
 });
 
-// Launch Bot
-bot.launch().then(() => {
-  console.log('🚀 BAZZ Social Media Downloader Bot is live!');
-});
+// Launch Bot with Error Handling
+bot.launch()
+  .then(() => console.log('🚀 BAZZ Social Media Downloader Bot is live!'))
+  .catch((err) => console.error('FAILED TO START BOT:', err.message));
 
 process.once('SIGINT', () => bot.stop('SIGINT'));
 process.once('SIGTERM', () => bot.stop('SIGTERM'));
+
 
