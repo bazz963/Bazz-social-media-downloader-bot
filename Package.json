@@ -16,7 +16,7 @@
   "author": "BazzHacker963",
   "license": "ISC",
   "dependencies": {
-    "axios": "^1.7.9",
+    "axios": "^1.7.2",
     "telegraf": "^4.16.3"
   }
 }
