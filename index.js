@@ -3,8 +3,8 @@ const axios = require('axios');
 const fs = require('fs');
 
 // ================= CONFIGURATION =================
-const BOT_TOKEN = 'YOUR_TELEGRAM_BOT_TOKEN_HERE'; // MUST BE YOUR REAL BOT TOKEN
-const ADMIN_ID = 7667145353; // Your numeric Telegram User ID
+const BOT_TOKEN = 'YOUR_TELEGRAM_BOT_TOKEN_HERE';
+const ADMIN_ID = 7667145353; // Replace with your numeric Telegram User ID
 
 // REQUIRED CHANNELS & GROUPS (Bot MUST be Admin in both!)
 const REQUIRED_CHANNEL = '@bazzstore963'; 
@@ -13,7 +13,7 @@ const REQUIRED_GROUP = '@bazzxmadybug';
 const CHANNEL_LINK = 'https://t.me/bazzstore963';
 const GROUP_LINK = 'https://t.me/bazzxmadybug';
 
-const START_PHOTO_URL = 'https://images.unsplash.com/photo-1611162617474-5b21e879e113?auto=format&fit=crop&w=800&q=80';
+const START_PHOTO_URL = 'https://kommodo.ai/i/LwlGWbnYyseBUuBx7fQp';
 const USERS_FILE = './users.json';
 
 const SOCIAL_DOWNLOADER_API = 'https://api.example.com/download?url=';
@@ -103,6 +103,7 @@ bot.action('verify_join', async (ctx) => {
   }
 });
 
+// /start Command
 bot.start(async (ctx) => {
   const allowed = await verifyForceJoin(ctx);
   if (!allowed) return;
@@ -122,7 +123,7 @@ bot.start(async (ctx) => {
 • Lightning Fast Downloads
 • Free & Premium Experience
 ━━━━━━━━━━━━━━━━━━━━━━
-<tg-emoji emoji-id="6120674721487918156">😒</tg-emoji> <b>Developer:</b> BazzHacker963`;
+<tg-emoji emoji-id="6120674721487918156">😒</tg-emoji> <b>Developer:</b> <a href="https://t.me/BazzHacker963">BazzHacker963</a>`;
 
   try {
     await ctx.replyWithPhoto(START_PHOTO_URL, {
@@ -134,6 +135,7 @@ bot.start(async (ctx) => {
   }
 });
 
+// /music Command
 bot.command('music', async (ctx) => {
   const allowed = await verifyForceJoin(ctx);
   if (!allowed) return;
@@ -166,6 +168,7 @@ bot.command('music', async (ctx) => {
   }
 });
 
+// Admin Command: /listusers
 bot.command('listusers', async (ctx) => {
   if (!isAdmin(ctx)) {
     return ctx.reply('⛔ Unauthorized access.');
@@ -183,6 +186,7 @@ bot.command('listusers', async (ctx) => {
   await ctx.reply(text, { parse_mode: 'HTML' });
 });
 
+// Admin Command: /broadcast <message>
 bot.command('broadcast', async (ctx) => {
   if (!isAdmin(ctx)) {
     return ctx.reply('⛔ Unauthorized access.');
@@ -211,6 +215,7 @@ bot.command('broadcast', async (ctx) => {
   await ctx.reply(`✅ <b>Broadcast Completed!</b>\n\n• Successful: ${successCount}\n• Failed/Blocked: ${failCount}`, { parse_mode: 'HTML' });
 });
 
+// Link Handler: Auto-detect social media URLs
 bot.on('text', async (ctx) => {
   const text = ctx.message.text;
 
@@ -226,7 +231,7 @@ bot.on('text', async (ctx) => {
 
       if (data && data.videoUrl) {
         await ctx.replyWithVideo({ url: data.videoUrl }, {
-          caption: '✨ <b>Downloaded by BAZZ SOCIAL MEDIA DOWNLOADER</b>\n<tg-emoji emoji-id="6120674721487918156">😒</tg-emoji> <b>Developer:</b> BazzHacker963',
+          caption: '✨ <b>Downloaded by BAZZ SOCIAL MEDIA DOWNLOADER</b>\n<tg-emoji emoji-id="6120674721487918156">😒</tg-emoji> <b>Developer:</b> <a href="https://t.me/BazzHacker963">BazzHacker963</a>',
           parse_mode: 'HTML'
         });
       } else {
@@ -241,12 +246,13 @@ bot.on('text', async (ctx) => {
   }
 });
 
-// Launch Bot with Error Handling
+// Launch Bot
 bot.launch()
   .then(() => console.log('🚀 BAZZ Social Media Downloader Bot is live!'))
   .catch((err) => console.error('FAILED TO START BOT:', err.message));
 
 process.once('SIGINT', () => bot.stop('SIGINT'));
 process.once('SIGTERM', () => bot.stop('SIGTERM'));
+
 
 
