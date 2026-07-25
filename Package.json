@@ -1,0 +1,22 @@
+{
+  "name": "bazz-social-media-downloader",
+  "version": "1.0.0",
+  "description": "Telegram Social Media & Music Downloader Bot with Force Join",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "keywords": [
+    "telegram",
+    "bot",
+    "downloader",
+    "telegraf",
+    "axios"
+  ],
+  "author": "BazzHacker963",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^1.7.9",
+    "telegraf": "^4.16.3"
+  }
+}
